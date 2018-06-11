@@ -1,18 +1,6 @@
 const path = require('path');
 const env = require('var');
 
-/**
- * @name mongoConfig
- * @summary Configurations for our Mongo instance
- */
-let mongoConfig = {
-	connection: `mongodb://${env.MONGO_HOSTNAME}`,
-	db_name: env.MONGO_DB_NAME,
-	options: {
-		auto_reconnect: true
-	}
-};
-
 // Set up whitelist
 let whitelist_env = env.WHITELIST && env.WHITELIST.split(',').map(host => host.trim()) || false;
 
@@ -78,6 +66,5 @@ if (env.SSL_KEY && env.SSL_CERT) {
 }
 
 module.exports = {
-	fhirServerConfig,
-	mongoConfig
+	fhirServerConfig
 };
