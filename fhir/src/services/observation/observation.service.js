@@ -5,11 +5,11 @@ const globals = require('../../globals');
 /**
  * @name getCount
  * @description Get the number of observations in our database
- * @param {Express.req} req - Express request object
+ * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getCount = (req, logger) => new Promise((resolve, reject) => {
+module.exports.getCount = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Observation >>> getCount');
 	// Grab an instance of our DB and collection
 	let db = globals.get(CLIENT_DB);
@@ -27,14 +27,14 @@ module.exports.getCount = (req, logger) => new Promise((resolve, reject) => {
 /**
  * @name getObservation
  * @description Get observation(s) from our database
- * @param {Express.req} req - Express request object
+ * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getObservation = (req, logger) => new Promise((resolve, reject) => {
+module.exports.getObservation = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Observation >>> getObservation');
 	// Parse out all the params for this service and start building our query
-	let { patient, category, code, date } = req.query;
+	let { patient, category, code, date } = args;
 	// Patient is required and guaranteed to be provided
 	let query = {
 		subject: {
@@ -74,14 +74,14 @@ module.exports.getObservation = (req, logger) => new Promise((resolve, reject) =
 /**
  * @name getObservationById
  * @description Get an observation from our database
- * @param {Express.req} req - Express request object
+ * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getObservationById = (req, logger) => new Promise((resolve, reject) => {
+module.exports.getObservationById = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Observation >>> getObservationById');
 	// Parse the required params, these are validated by sanitizeMiddleware in core
-	let { id } = req.params;
+	let { id } = args;
 	// Grab an instance of our DB and collection
 	let db = globals.get(CLIENT_DB);
 	let collection = db.collection(COLLECTION.OBSERVATION);
@@ -92,5 +92,90 @@ module.exports.getObservationById = (req, logger) => new Promise((resolve, rejec
 			return reject(err);
 		}
 		resolve(observation);
+	});
+});
+
+/**
+ * @name createObservation
+ * @description Create a observation
+ * @param {Object} args - Any provided args
+ * @param {Winston} logger - Winston logger
+ * @return {Promise}
+ */
+module.exports.createObservation = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Observation >>> createObservation');
+	let { id, resource } = args;
+	// Grab an instance of our DB and collection
+	let db = globals.get(CLIENT_DB);
+	let collection = db.collection(COLLECTION.OBSERVATION);
+	// If there is an id, use it, otherwise let mongo generate it
+	let doc = Object.assign(resource.toJSON(), { _id: id });
+	// Insert our observation record
+	collection.insert(doc, (err, res) => {
+		if (err) {
+			logger.error('Error with Observation.createObservation: ', err);
+			return reject(err);
+		}
+		// Grab the observation record so we can pass back the id
+		let [ observation ] = res.ops;
+
+		return resolve({ id: observation.id });
+	});
+});
+
+/**
+ * @name updateObservation
+ * @description Update a observation
+ * @param {Object} args - Any provided args
+ * @param {Winston} logger - Winston logger
+ * @return {Promise}
+ */
+module.exports.updateObservation = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Observation >>> updateObservation');
+	let { id, resource } = args;
+	// Grab an instance of our DB and collection
+	let db = globals.get(CLIENT_DB);
+	let collection = db.collection(COLLECTION.OBSERVATION);
+	// Set the id of the resource
+	let doc = Object.assign(resource.toJSON(), { _id: id });
+	// Insert/update our observation record
+	collection.findOneAndUpdate({ id: id }, doc, { upsert: true }, (err, res) => {
+		if (err) {
+			logger.error('Error with Observation.updateObservation: ', err);
+			return reject(err);
+		}
+		// If we support versioning, which we do not at the moment,
+		// we need to return a version
+		return resolve({ id: res.value && res.value.id });
+	});
+});
+
+/**
+ * @name deleteObservation
+ * @description Delete a observation
+ * @param {Object} args - Any provided args
+ * @param {Winston} logger - Winston logger
+ * @return {Promise}
+ */
+module.exports.deleteObservation = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Observation >>> deleteObservation');
+	let { id } = args;
+	// Grab an instance of our DB and collection
+	let db = globals.get(CLIENT_DB);
+	let collection = db.collection(COLLECTION.OBSERVATION);
+	// Delete our observation record
+	collection.remove({ id: id }, (err, _) => {
+		if (err) {
+			logger.error('Error with Observation.deleteObservation');
+			return reject({
+				// Must be 405 (Method Not Allowed) or 409 (Conflict)
+				// 405 if you do not want to allow the delete
+				// 409 if you can't delete because of referential
+				// integrity or some other reason
+				code: 409,
+				message: err.message
+			});
+		}
+		return resolve();
 	});
 });

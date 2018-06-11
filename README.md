@@ -7,7 +7,8 @@ This project is an example project built on `@asymmetrik/node-fhir-server-core` 
 ## Getting Started with Docker
 
 1. Install the latest [Docker Community Edition](https://www.docker.com/community-edition) for your OS if you do not already have it installed.
-2. Run `docker-compose up`.
+2. Create a new file `.local-secrets/auth.secrets` and fill in the values from `.local-secrets/auth.example`.
+3. Run `docker-compose up`.
 
 ## Next Steps
 Once you have this up and running. You should see the following output:
@@ -19,7 +20,7 @@ Once you have this up and running. You should see the following output:
 
 At this point you can now start testing the endpoints. Depending what profiles you opt into, certain routes will be available.
 
-You can view the routes enabled based on which service methods you provide over at [`@asymmetrik/node-fhir-server-core`](https://github.com/Asymmetrik/node-fhir-server-core#profiles). 
+You can view the routes enabled based on which service methods you provide over at [`@asymmetrik/node-fhir-server-core`](https://github.com/Asymmetrik/node-fhir-server-core#profiles).
 
 The url the server will be running at will partially depend on your configuration. For local development, the default is `http://localhost:3000`. You can of course change the port in the `docker-compose.yml` or the `env.json`. You can also enable https by providing SSL certs. If you want to do this you must first generate them, see [Generate self signed certs](https://github.com/Asymmetrik/node-fhir-server-core/blob/master/.github/CONTRIBUTING.md#generate-self-signed-certs). Then, add the path to them in your config by setting `SSL_KEY` and `SSL_CERT` as ENV variable's, adding them in `docker-compose.yml`, or adding them to `env.json`. This will allow the app to run on `https://localhost:3000`. Note the link is for generating self signed certs, you should not use those for production. You can verify the path is set correctly by logging out the fhirServerConfig in `index.js`.
 

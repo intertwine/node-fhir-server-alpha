@@ -4,11 +4,11 @@ const globals = require('../../globals');
 /**
  * @name getCount
  * @description Get the number of patients in our database
- * @param {Express.req} req - Express request object
+ * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getCount = (req, logger) => new Promise((resolve, reject) => {
+module.exports.getCount = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Patient >>> getCount');
 	// Grab an instance of our DB and collection
 	let db = globals.get(CLIENT_DB);
@@ -26,14 +26,14 @@ module.exports.getCount = (req, logger) => new Promise((resolve, reject) => {
 /**
  * @name getPatient
  * @description Get a patient from params
- * @param {Express.req} req - Express request object
+ * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getPatient = (req, logger) => new Promise((resolve, reject) => {
+module.exports.getPatient = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Patient >>> getPatient');
 	// Parse the params
-	let { id, identifier, name, family, given, gender, birthDate } = req.query;
+	let { id, identifier, name, family, given, gender, birthDate } = args;
 	let query = {};
 
 	if (id) {
@@ -42,7 +42,8 @@ module.exports.getPatient = (req, logger) => new Promise((resolve, reject) => {
 
 	if (identifier) {
 		let [ system, value ] = identifier.split('|');
-		query.identifier = [{ system, value }];
+
+		query.identifier = {$elemMatch: { system, value }};
 	}
 
 	if (name) {
@@ -82,14 +83,14 @@ module.exports.getPatient = (req, logger) => new Promise((resolve, reject) => {
 /**
  * @name getPatientById
  * @description Get a patient by their unique identifier
- * @param {Express.req} req - Express request object
+ * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getPatientById = (req, logger) => new Promise((resolve, reject) => {
+module.exports.getPatientById = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Patient >>> getPatientById');
 	// Parse the required params, these are validated by sanitizeMiddleware in core
-	let { id } = req.params;
+	let { id } = args;
 	// Grab an instance of our DB and collection
 	let db = globals.get(CLIENT_DB);
 	let collection = db.collection(COLLECTION.PATIENT);
@@ -100,5 +101,90 @@ module.exports.getPatientById = (req, logger) => new Promise((resolve, reject) =
 			return reject(err);
 		}
 		resolve(patient);
+	});
+});
+
+/**
+ * @name createPatient
+ * @description Create a patient
+ * @param {Object} args - Any provided args
+ * @param {Winston} logger - Winston logger
+ * @return {Promise}
+ */
+module.exports.createPatient = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> createPatient');
+	let { id, resource } = args;
+	// Grab an instance of our DB and collection
+	let db = globals.get(CLIENT_DB);
+	let collection = db.collection(COLLECTION.PATIENT);
+	// If there is an id, use it, otherwise let mongo generate it
+	let doc = Object.assign(resource.toJSON(), { _id: id });
+	// Insert our patient record
+	collection.insert(doc, (err, res) => {
+		if (err) {
+			logger.error('Error with Patient.createPatient: ', err);
+			return reject(err);
+		}
+		// Grab the patient record so we can pass back the id
+		let [ patient ] = res.ops;
+
+		return resolve({ id: patient.id });
+	});
+});
+
+/**
+ * @name updatePatient
+ * @description Update a patient
+ * @param {Object} args - Any provided args
+ * @param {Winston} logger - Winston logger
+ * @return {Promise}
+ */
+module.exports.updatePatient = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> updatePatient');
+	let { id, resource } = args;
+	// Grab an instance of our DB and collection
+	let db = globals.get(CLIENT_DB);
+	let collection = db.collection(COLLECTION.PATIENT);
+	// Set the id of the resource
+	let doc = Object.assign(resource.toJSON(), { _id: id });
+	// Insert/update our patient record
+	collection.findOneAndUpdate({ id: id }, doc, { upsert: true }, (err, res) => {
+		if (err) {
+			logger.error('Error with Patient.updatePatient: ', err);
+			return reject(err);
+		}
+		// If we support versioning, which we do not at the moment,
+		// we need to return a version
+		return resolve({ id: res.value && res.value.id });
+	});
+});
+
+/**
+ * @name deletePatient
+ * @description Delete a patient
+ * @param {Object} args - Any provided args
+ * @param {Winston} logger - Winston logger
+ * @return {Promise}
+ */
+module.exports.deletePatient = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> deletePatient');
+	let { id } = args;
+	// Grab an instance of our DB and collection
+	let db = globals.get(CLIENT_DB);
+	let collection = db.collection(COLLECTION.PATIENT);
+	// Delete our patient record
+	collection.remove({ id: id }, (err, _) => {
+		if (err) {
+			logger.error('Error with Patient.deletePatient');
+			return reject({
+				// Must be 405 (Method Not Allowed) or 409 (Conflict)
+				// 405 if you do not want to allow the delete
+				// 409 if you can't delete because of referential
+				// integrity or some other reason
+				code: 409,
+				message: err.message
+			});
+		}
+		return resolve();
 	});
 });

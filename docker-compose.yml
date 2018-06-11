@@ -5,8 +5,12 @@ services:
     build:
       context: fhir
       dockerfile: Dockerfile
+    env_file:
+      - .local-secrets/auth.secrets
     environment:
       SERVER_PORT: 3000
+      RESOURCE_SERVER: http://myserver.com
+      AUTH_SERVER_URI: https://afternoon-springs-39948.herokuapp.com/
       # SSL_KEY: ./src/key.pem
       # SSL_CERT: ./src/cert.pem
     ports:
@@ -15,4 +19,17 @@ services:
       - ./fhir/scripts:/srv/src/scripts
       - ./.eslintrc:/srv/src/.eslintrc
       - ./fhir/src:/srv/src/src
+<<<<<<< HEAD
     command: yarn nodemon
+=======
+    command: yarn nodemon
+
+  mongo:
+    image: mongo:3.6.1
+    ports:
+      - "27017"
+    volumes:
+      - mongo_data:/data/db
+volumes:
+  mongo_data:
+>>>>>>> feature/more-test-coverage

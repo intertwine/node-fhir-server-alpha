@@ -1,3 +1,4 @@
+const { VERSIONS } = require('@asymmetrik/node-fhir-server-core/src/constants');
 const path = require('path');
 const env = require('var');
 
@@ -18,7 +19,10 @@ let whitelist = whitelist_env && whitelist_env.length === 1
 let fhirServerConfig = {
 	auth: {
 		resourceServer: env.RESOURCE_SERVER,
-		service: path.resolve('./src/services/oauth/oauth.validator.js'),
+		protectedResourceClientId: env.AUTH_CLIENT_ID,
+		protectedResourceClientSecret: env.AUTH_CLIENT_SECRET,
+		introspectionUrl: `${env.AUTH_SERVER_URI}/introspect`
+
 	},
 	server: {
 		// support various ENV that uses PORT vs SERVER_PORT
@@ -44,16 +48,13 @@ let fhirServerConfig = {
 		// optional - registration
 	],
 	profiles: {
-		dstu2: {
-			patient: {
-				service: path.resolve('./src/services/patient/patient.service.js')
-			},
-			observation: {
-				service: path.resolve('./src/services/observation/observation.service.js')
-			},
-			oauth: {
-				service: path.resolve('./src/services/oauth/oauth.service.js')
-			}
+		patient: {
+			service: path.resolve('./src/services/patient/patient.service.js'),
+			versions: [ VERSIONS.STU3 ]
+		},
+		observation: {
+			service: path.resolve('./src/services/observation/observation.service.js'),
+			versions: [ VERSIONS.STU3 ]
 		}
 	}
 };
