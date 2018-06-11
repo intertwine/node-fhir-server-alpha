@@ -1,10 +1,11 @@
 {
-  "name": "@asymmetrik/node-fhir-server-mongo",
+  "name": "@asymmetrik/node-fhir-server-vista",
   "version": "1.0.0-rc1",
-  "description": "Mongo Server implementing @asymmetrik/node-fhir-server-core",
+  "description": "NodeVista REST Server implementing @asymmetrik/node-fhir-server-core",
   "main": "src/index.js",
-  "repository": "https://github.com/Asymmetrik/node-fhir-server-mongo.git",
+  "repository": "https://github.com/Asymmetrik/node-fhir-server-vista.git",
   "contributors": [
+    "Bryan Young <byoung@asymmetrik.com>",
     "Robert Winterbottom <rwinterbottom@asymmetrik.com>"
   ],
   "license": "MIT",
@@ -16,5 +17,4 @@
     "start": "export NODE_ENV=production; cd fhir && node src/index.js;"
   },
   "cacheDirectories": ["fhir/node_modules"]
-
 }
