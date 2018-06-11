@@ -13,23 +13,12 @@
     "node": ">=8.6"
   },
   "scripts": {
-<<<<<<< HEAD
     "start": "export NODE_ENV=production; node src/index.js;",
     "nodemon": "export NODE_ENV=development; node scripts/nodemon;",
     "test": "export NODE_ENV=test; set -e; npm run test:ci;",
     "test:ci": "npm run test:lint; npm run test:jest;",
     "test:lint": "eslint \"src/**/*.js\"",
     "test:jest": "jest"
-=======
-    "start": "cross-env NODE_ENV=production; node src/index.js;",
-    "nodemon": "cross-env NODE_ENV=development; node scripts/nodemon;",
-    "test": "cross-env-shell NODE_ENV=test \"set -e\" \"npm run test:ci;\"",
-    "test:ci": "npm run test:prepare-db; npm run test:lint; npm run test:jest;",
-    "test:lint": "eslint \"src/**/*.js\"",
-    "test:jest": "jest --forceExit",
-    "test:prepare-db": "node scripts/populate -a -r",
-    "populate": "node scripts/populate"
->>>>>>> feature/more-test-coverage
   },
   "jest": {
     "verbose": true,
@@ -44,11 +33,7 @@
     ]
   },
   "dependencies": {
-<<<<<<< HEAD
-    "@asymmetrik/node-fhir-server-core": "git+https://github.com/Asymmetrik/node-fhir-server-core.git",
-=======
     "@asymmetrik/node-fhir-server-core": "git+https://github.com/Asymmetrik/node-fhir-server-core.git#develop",
->>>>>>> feature/more-test-coverage
     "jsonwebtoken": "^8.1.0",
     "moment-timezone": "^0.5.14",
     "var": "^0.3.2"

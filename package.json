@@ -16,11 +16,7 @@
     "postinstall": "cd fhir && npm install",
     "start": "export NODE_ENV=production; cd fhir && node src/index.js;"
   },
-<<<<<<< HEAD
-  "cacheDirectories": ["fhir/node_modules"]
-=======
   "cacheDirectories": [
     "fhir/node_modules"
   ]
->>>>>>> feature/more-test-coverage
 }
