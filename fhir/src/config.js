@@ -51,11 +51,12 @@ let fhirServerConfig = {
 		patient: {
 			service: path.resolve('./src/services/patient/patient.service.js'),
 			versions: [ VERSIONS.STU3 ]
-		},
-		observation: {
-			service: path.resolve('./src/services/observation/observation.service.js'),
-			versions: [ VERSIONS.STU3 ]
 		}
+		// ,
+		// observation: {
+		// 	service: path.resolve('./src/services/observation/observation.service.js'),
+		// 	versions: [ VERSIONS.STU3 ]
+		// }
 	}
 };
 
