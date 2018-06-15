@@ -18,11 +18,7 @@ let whitelist = whitelist_env && whitelist_env.length === 1
  */
 let fhirServerConfig = {
 	auth: {
-		resourceServer: env.RESOURCE_SERVER,
-		protectedResourceClientId: env.AUTH_CLIENT_ID,
-		protectedResourceClientSecret: env.AUTH_CLIENT_SECRET,
-		introspectionUrl: `${env.AUTH_SERVER_URI}/introspect`
-
+		service: path.resolve('./src/services/auth/vista.auth.service.js'),
 	},
 	server: {
 		// support various ENV that uses PORT vs SERVER_PORT
@@ -36,20 +32,9 @@ let fhirServerConfig = {
 	logging: {
 		level: env.LOGGING_LEVEL
 	},
-	security: [
-		{
-			url: 'authorize',
-			valueUri: `${env.AUTH_SERVER_URI}/authorize`
-		},
-		{
-			url: 'token',
-			valueUri: `${env.AUTH_SERVER_URI}/token`
-		}
-		// optional - registration
-	],
 	profiles: {
 		patient: {
-			service: path.resolve('./src/services/patient/patient.service.js'),
+			service: require(path.resolve('./src/services/patient/patient.service.js')),
 			versions: [ VERSIONS.STU3 ]
 		}
 		// ,

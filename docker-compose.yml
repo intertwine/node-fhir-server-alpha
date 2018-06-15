@@ -9,8 +9,8 @@ services:
       - .local-secrets/auth.secrets
     environment:
       SERVER_PORT: 3000
-      RESOURCE_SERVER: http://myserver.com
-      AUTH_SERVER_URI: https://afternoon-springs-39948.herokuapp.com/
+      # RESOURCE_SERVER: http://myserver.com
+      # AUTH_SERVER_URI: https://afternoon-springs-39948.herokuapp.com/
       # SSL_KEY: ./src/key.pem
       # SSL_CERT: ./src/cert.pem
     ports:

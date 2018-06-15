@@ -115,15 +115,9 @@ The commands are as follows:
 * `start` - Run in production mode with NODE_ENV set to `production`. Use this when deploying.
 * `nodemon` - Run in development mode with NODE_ENV set to `development`. This uses nodemon to restart the server when any js files in `src` are changed.
 * `test` - Runs all of our test commands (via the 'test:ci' command), with NODE_ENV set to `test`. This is used for CI.
-* `test:ci` - Convenience command which runs test:prepare-db, test:lint, and test:jest. You should not run this command, run the `test` command instead because it set's NODE_ENV correctly for testing.
+* `test:ci` - Convenience command which runs test:lint, and test:jest. You should not run this command, run the `test` command instead because it sets NODE_ENV correctly for testing.
 * `test:lint` - Runs eslint against `fhir/src` with rules defined in the `.eslintrc`.
 * `test:jest` - Runs tests using the [Jest](https://facebook.github.io/jest/) framework. It will run any tests in a `__tests__` directory or with the naming convention `<anything>.test.js`.
-* `test:prepare-db` - This will reset and reinsert all the sample data into Mongo. This way you have a decent amount of data to work with when running your tests. When this is run via the `test` command, it will set the NODE_ENV for you. If you are running it independently, set the NODE_ENV before using.
-* `populate` - This allows you to populate the database. One thing to keep in mind when using this, if the NODE_ENV is not set, it will default to the production db name. When you invoke this through docker, it will set NODE_ENV to `development` for you except when running tests, it will then use `test`. When running in node, you may need to manually set it to which ever environment you need it to be in. The db names are defined in the `env.json` file. This command also accepts some extra flags.
-	* `-h` or `--help` - Prints help to the console.
-	* `-p` or `--profiles` - Comma separated list of profiles to insert. For example, `-p Patient,Observation`.
-	* `-a` or `-all` - Insert all the sample data that we have.
-	* `-r` or `--reset` - Reset each collection before an insert. This will essentially drop the collection before creating it and inserting documents into it.
 
 #### Example commands
 

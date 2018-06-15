@@ -13,8 +13,8 @@
     "node": ">=8.6"
   },
   "scripts": {
-    "start": "export NODE_ENV=production; node src/index.js;",
-    "nodemon": "export NODE_ENV=development; node scripts/nodemon;",
+    "start": "export NODE_ENV=test; node src/index.js;",
+    "nodemon": "export NODE_ENV=test; node scripts/nodemon;",
     "test": "export NODE_ENV=test; set -e; npm run test:ci;",
     "test:ci": "npm run test:lint; npm run test:jest;",
     "test:lint": "eslint \"src/**/*.js\"",
