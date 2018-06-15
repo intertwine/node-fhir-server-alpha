@@ -2,36 +2,37 @@ const { COLLECTION, CLIENT_DB } = require('../../constants');
 const globals = require('../../globals');
 
 /**
- * @name getCount
+ * @name count
  * @description Get the number of patients in our database
  * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getCount = (args, logger) => new Promise((resolve, reject) => {
-	logger.info('Patient >>> getCount');
-	// Grab an instance of our DB and collection
-	let db = globals.get(CLIENT_DB);
-	let collection = db.collection(COLLECTION.PATIENT);
-	// Query all documents in this collection
-	collection.count((err, count) => {
-		if (err) {
-			logger.error('Error with Patient.getCount: ', err);
-			return reject(err);
-		}
-		return resolve(count);
-	});
+module.exports.count = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> count');
+	// // Grab an instance of our DB and collection
+	// let db = globals.get(CLIENT_DB);
+	// let collection = db.collection(COLLECTION.PATIENT);
+	// // Query all documents in this collection
+	// collection.count((err, count) => {
+	// 	if (err) {
+	// 		logger.error('Error with Patient.count: ', err);
+	// 		return reject(err);
+	// 	}
+	let count = 10;
+	return resolve(count);
+	// });
 });
 
 /**
- * @name getPatient
+ * @name search
  * @description Get a patient from params
  * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getPatient = (args, logger) => new Promise((resolve, reject) => {
-	logger.info('Patient >>> getPatient');
+module.exports.search = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> search');
 	// Parse the params
 	let { id, identifier, name, family, given, gender, birthDate } = args;
 	let query = {};
@@ -67,52 +68,54 @@ module.exports.getPatient = (args, logger) => new Promise((resolve, reject) => {
 	}
 
 	// Grab an instance of our DB and collection
-	let db = globals.get(CLIENT_DB);
-	let collection = db.collection(COLLECTION.PATIENT);
-	// Query our collection for this observation
-	collection.find(query, (err, patient) => {
-		if (err) {
-			logger.error('Error with Patient.getPatient: ', err);
-			return reject(err);
-		}
-		// Patient is a patient cursor, pull documents out before resolving
-		patient.toArray().then(resolve, reject);
-	});
+	// let db = globals.get(CLIENT_DB);
+	// let collection = db.collection(COLLECTION.PATIENT);
+	// // Query our collection for this observation
+	// collection.find(query, (err, patient) => {
+	// 	if (err) {
+	// 		logger.error('Error with Patient.search: ', err);
+	// 		return reject(err);
+	// 	}
+	// 	// Patient is a patient cursor, pull documents out before resolving
+	// 	patient.toArray().then(resolve, reject);
+	// });
+	resolve([]);
 });
 
 /**
- * @name getPatientById
+ * @name searchById
  * @description Get a patient by their unique identifier
  * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.getPatientById = (args, logger) => new Promise((resolve, reject) => {
-	logger.info('Patient >>> getPatientById');
-	// Parse the required params, these are validated by sanitizeMiddleware in core
-	let { id } = args;
-	// Grab an instance of our DB and collection
-	let db = globals.get(CLIENT_DB);
-	let collection = db.collection(COLLECTION.PATIENT);
-	// Query our collection for this observation
-	collection.findOne({ id: id.toString() }, (err, patient) => {
-		if (err) {
-			logger.error('Error with Patient.getPatientById: ', err);
-			return reject(err);
-		}
-		resolve(patient);
-	});
+module.exports.searchById = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> searchById');
+	// // Parse the required params, these are validated by sanitizeMiddleware in core
+	// let { id } = args;
+	// // Grab an instance of our DB and collection
+	// let db = globals.get(CLIENT_DB);
+	// let collection = db.collection(COLLECTION.PATIENT);
+	// // Query our collection for this observation
+	// collection.findOne({ id: id.toString() }, (err, patient) => {
+	// 	if (err) {
+	// 		logger.error('Error with Patient.searchById: ', err);
+	// 		return reject(err);
+	// 	}
+	// 	resolve(patient);
+	// });
+	resolve([])
 });
 
 /**
- * @name createPatient
+ * @name create
  * @description Create a patient
  * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.createPatient = (args, logger) => new Promise((resolve, reject) => {
-	logger.info('Patient >>> createPatient');
+module.exports.create = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> create');
 	let { id, resource } = args;
 	// Grab an instance of our DB and collection
 	let db = globals.get(CLIENT_DB);
@@ -122,7 +125,7 @@ module.exports.createPatient = (args, logger) => new Promise((resolve, reject) =
 	// Insert our patient record
 	collection.insert(doc, (err, res) => {
 		if (err) {
-			logger.error('Error with Patient.createPatient: ', err);
+			logger.error('Error with Patient.create: ', err);
 			return reject(err);
 		}
 		// Grab the patient record so we can pass back the id
@@ -133,14 +136,14 @@ module.exports.createPatient = (args, logger) => new Promise((resolve, reject) =
 });
 
 /**
- * @name updatePatient
+ * @name update
  * @description Update a patient
  * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.updatePatient = (args, logger) => new Promise((resolve, reject) => {
-	logger.info('Patient >>> updatePatient');
+module.exports.update = (args, logger) => new Promise((resolve, reject) => {
+	logger.info('Patient >>> update');
 	let { id, resource } = args;
 	// Grab an instance of our DB and collection
 	let db = globals.get(CLIENT_DB);
@@ -150,7 +153,7 @@ module.exports.updatePatient = (args, logger) => new Promise((resolve, reject) =
 	// Insert/update our patient record
 	collection.findOneAndUpdate({ id: id }, doc, { upsert: true }, (err, res) => {
 		if (err) {
-			logger.error('Error with Patient.updatePatient: ', err);
+			logger.error('Error with Patient.update: ', err);
 			return reject(err);
 		}
 		// If we support versioning, which we do not at the moment,
@@ -160,13 +163,13 @@ module.exports.updatePatient = (args, logger) => new Promise((resolve, reject) =
 });
 
 /**
- * @name deletePatient
+ * @name remove
  * @description Delete a patient
  * @param {Object} args - Any provided args
  * @param {Winston} logger - Winston logger
  * @return {Promise}
  */
-module.exports.deletePatient = (args, logger) => new Promise((resolve, reject) => {
+module.exports.remove = (args, logger) => new Promise((resolve, reject) => {
 	logger.info('Patient >>> deletePatient');
 	let { id } = args;
 	// Grab an instance of our DB and collection

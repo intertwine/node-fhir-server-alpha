@@ -34,7 +34,7 @@ let fhirServerConfig = {
 	},
 	profiles: {
 		patient: {
-			service: require(path.resolve('./src/services/patient/patient.service.js')),
+			service: path.resolve('./src/services/patient/patient.service.js'),
 			versions: [ VERSIONS.STU3 ]
 		}
 		// ,
